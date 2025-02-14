@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 
 
 const app = express();
@@ -33,12 +33,27 @@ async function run() {
     const database = client.db("UserDB");
     const haiku = database.collection("users");
 
+
+    app.get('/users',async(req,res)=>{
+      const cursor = haiku.find();
+      const result= await cursor.toArray();
+      res.send(result);
+    })
+
     app.post('/users', async(req, res) => {
      const user= req.body;
      console.log("New user ",user);
      const result = await haiku.insertOne(user);
+     res.send(result)
     })
 
+    app.delete('/users/:id',async(req,res)=>{
+      const id= req.params.id
+      console.log("Dlelete",id);
+      const query = { _id: new ObjectId(id) };
+      const result = await haiku.deleteOne(query);
+      res.send(result)
+    })
 
   }
 
