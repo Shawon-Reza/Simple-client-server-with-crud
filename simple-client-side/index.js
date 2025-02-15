@@ -40,11 +40,40 @@ async function run() {
       res.send(result);
     })
 
+    app.get('/users/updates/:id',async(req,res)=>{
+      const id= req.params.id
+      console.log("Updated id ",id);
+
+      const query = { _id: new ObjectId(id) }
+      const result = await haiku.findOne(query);
+      console.log(result);
+      res.send(result)
+
+    })
+
     app.post('/users', async(req, res) => {
      const user= req.body;
      console.log("New user ",user);
      const result = await haiku.insertOne(user);
      res.send(result)
+    })
+
+    app.put('/users/updates/:id',async(req,res)=>{
+      const updateddetails= req.body;
+      const id= req.params.id
+      console.log("Detalssssssssssss",updateddetails);
+
+      const filter = { _id: new ObjectId(id) };
+      const options = { upsert: true };
+
+      const updateDoc = {
+        $set: {
+          name: updateddetails.name
+        },
+      };
+
+      const result = await haiku.updateOne(filter, updateDoc, options);
+
     })
 
     app.delete('/users/:id',async(req,res)=>{
